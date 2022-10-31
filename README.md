@@ -47,8 +47,8 @@ log.SetOutput(&lumberjack.Logger{
 ``` go
 type Logger struct {
     // Filename is the file to write logs to.  Backup log files will be retained
-    // in the same directory.  It uses <processname>-lumberjack.log in
-    // os.TempDir() if empty.
+    // in the same directory, or where defined by `BackupDir`.
+    // It uses <processname>-lumberjack.log in os.TempDir() if empty.
     Filename string `json:"filename" yaml:"filename"`
 
     // MaxSize is the maximum size in megabytes of the log file before it gets
@@ -76,6 +76,14 @@ type Logger struct {
     // using gzip. The default is not to perform compression.
     Compress bool `json:"compress" yaml:"compress"`
     // contains filtered or unexported fields
+    
+    // TimeFormat determines the format to use for formatting the timestamp in
+    // backup files. The default format is defined in `DefaultTimeFormat`.
+    TimeFormat string `json:"timeformat" yaml:"timeformat"`
+    // BackupDir is the directory where backup files shall be saved to. The
+    // default is empty string which is resolved to where the active log file
+    // is located.
+    BackupDir string `json:"backupdir" yaml:"backupdir"`
 }
 ```
 Logger is an io.WriteCloser that writes to the specified filename.
@@ -99,6 +107,9 @@ the log was rotated formatted with the time.Time format of
 example, if your Logger.Filename is `/var/log/foo/server.log`, a backup created
 at 6:30pm on Nov 11 2016 would use the filename
 `/var/log/foo/server-2016-11-04T18-30-00.000.log`
+
+The backup files name and location can be customized using the `Logger`'s `BackupDir`
+and `TimeFormat` optional fields.
 
 ### Cleaning Up Old Log Files
 Whenever a new logfile gets created, old log files may be deleted.  The most

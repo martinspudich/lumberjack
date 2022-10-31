@@ -21,3 +21,10 @@ _testmain.go
 
 *.exe
 *.test
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+.private.env.json
